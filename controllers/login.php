@@ -16,6 +16,8 @@ class Login extends Controller
 
 	public function index(){
 
+		
+		$this->view->msg="haha";
 		$this->view->render('login/index');
 		//echo Hash::Create('md5','haha',HSKEY);
 
@@ -23,6 +25,14 @@ class Login extends Controller
 
 	public function check(){
 		$this->model->check();
+		// $check=$this->model->checklog();
+		// if($check===true){
+		// 	$this->view->render('dashboard/index');
+
+		// }else{
+		// 	$this->view->msg=$check;
+		// 	$this->view->render('login/index');
+		// }
 		
 
 

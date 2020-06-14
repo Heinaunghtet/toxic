@@ -1,7 +1,7 @@
 <?php
 /**
      * Define constants for hash function
-     * @param  [string]   page name
+     * @param  [string]   string
      *
      */
 define('HSKEY','heinaunghtet');

@@ -15,20 +15,21 @@ if(isset($_REQUEST['run'])){
 	// $form->fileval('checkImage');
 	// $submit = $form->submit();
 	// print_r($submit);
-	// $dir='img/';
-	// $aaa=$test->uploadFiles('fileToUpload',$dir,false);
-	// print_r($aaa);
+	$delete=['1.txt','2.txt'];
+	$dir='img/';
+	$aaa=$test->deletfiles($delete,$dir);
+	print_r($aaa);
 	//$form->val('maxlength',5);
-	$form->val( 'xss_clean_obj');
+	//$form->val( 'xss_clean_obj');
 	//$form->post('age');
 	//$form->val('digit');
 	//$form->post('sex');
 	//$form->file('fileToUpload');
 	//$form->fileval('print');
-	$submit = $form->submit();
+	//$submit = $form->submit();
 	//print_r($submit);
-	$data=$form->fetch();
-	print_r($data);
+	//$data=$form->fetch();
+	//print_r($data);
 	// if($submit===true){
 
 	// 	$data=$form->fetch();

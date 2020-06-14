@@ -217,10 +217,10 @@ class Validate
         return $data;
     }
 
-    // validate mime
+    
     public function checkMime($filename)
     {
-        // MIME types: http://filext.com/faq/office_mime_types.php
+        
         $finfo   = finfo_open(FILEINFO_MIME_TYPE);
         $tmpname = $filename['tmp_name'];
         if (empty($tmpname)) {

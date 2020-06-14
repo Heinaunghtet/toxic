@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -21,10 +22,11 @@ class Auth
         }
     }
 
-    public function doLog($text,$filename)
+    public function doLog($text)
     {
         // open log file
-        //$filename = "ulti/log.txt";
+        $filename = "form_ipn.log";
+        //$filename = $textfile;
         $fh       = fopen($filename, "a") or die("Could not open log file.");
         fwrite($fh, date("d-m-Y, H:i") . " - $text\n") or die("Could not write file!");
         fclose($fh);
@@ -42,3 +44,7 @@ class Auth
         return $ipAddr;
     }
 }
+
+
+Auth::doLog('aafdasfa');
+?>

@@ -17,7 +17,7 @@ class Csrf
         $token->expiry       = time() + $expiry;
         $token->sessiontoken = base64_encode(random_bytes(32));
         $token->cookietoken  = md5(base64_encode(random_bytes(32)));
-
+        //$randomtoken = base64_encode( openssl_random_pseudo_bytes(32));
         setcookie(self::makeCookieName($page), $token->cookietoken, $token->expiry);
 
         return $_SESSION['csrftokens'][$page] = $token;
@@ -169,32 +169,6 @@ class Csrf
         return true;
     }
 
-    public static function geCheck()
-    {
-        $url = $_GET['url'];
-        $url = rtrim($url, '/');
-        $url = filter_var($url, FILTER_SANITIZE_URL);
-        $url = explode('/', $url);
-
-        $length = count($url);
-        $check  = '';
-
-        //echo $length;
-        switch ($length) {
-            case 3:
-                $check = $url[0] . '/' . $url[1];
-                //print_r($this->_url);
-                break;
-            case 2:
-                $check = $url[0] . '/' . $url[1];
-                //print_r($this->_url);
-                break;
-            default:
-                $check = $url[0];
-                break;
-        }
-
-        return $check;
-    }
+    
 
 } // Csrf

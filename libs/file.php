@@ -46,7 +46,7 @@ class Files
                 $new_name       = $uniquesavename . '.' . $ext;
                 $target_file    = $dir . $new_name;
             } else {
-                $new_name     = basename($_FILES[$filename]["name"][$i]);
+                $new_name    = basename($_FILES[$filename]["name"][$i]);
                 $target_file = $dir . $new_name;
             } // name conditon end
 
@@ -54,7 +54,7 @@ class Files
 
             if ($temp_path != '') {
                 if (move_uploaded_file($temp_path, $target_file)) {
-                    $total_files[]=$new_name;
+                    $total_files[] = $new_name;
                 } else {
                     return false;
                 }
@@ -81,39 +81,38 @@ class Files
 // $files = ['./first.jpg','./second.jpg','./third.jpg'];
     public static function deletfiles($files = '', $directory)
     {
-        foreach ($files as $file) {
+        $result=true;
+        foreach ($files as $filename) {
             $path = $directory . $filename;
             if (file_exists($path)) {
-                if (unlink($path)) {
-                    return true;
-
-                } else {
-                    return false;
-
+                if (!unlink($path)) {
+                   $result = false;
                 }
+
             } else {
-                return false;
+               $result = false;
+               exit;
             }
         }
+        return $result;
     }
 
-// $directory = "Articles/";
-    public static function alldelete($directory, $remain = '')
+    // $directory = "Articles/";
+    public static function alldelete($directory)
     {
 
-        // Open a directory, and read its contents
-        if (is_dir($directory)) {
-            if ($opendirectory = opendir($directory)) {
-                while (($file = readdir($opendirectory)) !== false) {
-                    if (strpos($file, $remain) !== false) {
-                        unlink($directory . $file);
-                    }
-                }
-                closedir($opendirectory);
+        $files = glob($directory.'/*'); // get all file names
+        //$files = glob($directory.'/{,.}*, GLOB_BRACE'); // get all file names including hidden files
+        foreach ($files as $file) {
+            // iterate files
+            if (is_file($file)) {
+                unlink($file);
+            }else{
+                return false;
             }
+            // delete file
         }
     }
-
 
 }
 ?>

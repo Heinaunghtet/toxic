@@ -21,8 +21,11 @@ class Dashboard extends Controller
 
 	public function logout()
 	{
+		$log = Session::Get('id');
+		Auth::doLog($log,'ulti/log.txt');
 		Session::Destory();
 		header('location:http://localhost/toxic/');
+		
 	}
 
 

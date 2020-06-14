@@ -18,7 +18,7 @@
 	    
 		<input type="submit" value="SUBMIT">
 	</form>
-	<?php //echo $this->msg ?>
+	<?php print_r($this->msg); ?>
 	
 </div>
 
