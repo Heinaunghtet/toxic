@@ -23,9 +23,4 @@ class Hash
     }
 }
 
-// $name = $_POST['name'];
-// $email = $_POST['email'];
-// $salt = sha1( time() . rand(1, 1000) );
-// $password = sha1( $salt . $_POST['password'] );
-// $conn->query( "INSERT INTO users (name. email, password, salt)
-// VALUES ('$name', '$email', '$password', '$salt')" );
+

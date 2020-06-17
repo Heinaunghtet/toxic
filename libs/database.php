@@ -14,7 +14,7 @@ class Database extends PDO
         date_default_timezone_set("Asia/Yangon");
     }
 
-     /**
+    /**
      * Create function
      * @param  [array]   $data -> insert data
      * @param  [string]   $table -> table name
@@ -175,7 +175,6 @@ class Database extends PDO
 
     }
 
-
     /**
      * Read function
      * @param  [array]   $id -> predicate
@@ -200,11 +199,9 @@ class Database extends PDO
             $check = true;
         }
 
-
         return $check;
 
     }
-
 
     /**
      * Read function(need query for what you want to get data from table)
@@ -232,6 +229,92 @@ class Database extends PDO
             return $check;
         }
 
+    }
+
+    public function excelInsert($table, $data, $filename, $allsheet = false)
+    {
+        $check     = false;
+        $attribute = '`' . implode('`,`', array_keys($data)) . '`';
+        $param     = ' :' . implode(',:', array_keys($data));
+
+        // echo $attribute;
+        // echo $param;
+
+        $query  = "INSERT INTO $table ($attribute) VALUES ($param)";
+        $insert = $this->prepare($query);
+
+        if ($xlsx = SimpleXLSX::parse($_FILES[$filename]['tmp_name'])) {
+
+            if ($allsheet == false) {
+
+                $dim  = $xlsx->dimension();
+                $cols = $dim[0];
+                foreach ($xlsx->rows() as $fields) {
+                    foreach ($fields as $key => $value) {
+                        $insert->bindValue($param[$key], $value);
+                        // echo ($key . '=>' . $value);
+                    }
+
+                    if ($insert->execute()) {
+                        $check = true;
+                    } else {
+                        $check = false;
+                        exit;
+                    }
+
+                }
+
+            } else {
+
+                $page  = count($xlsx->sheetNames());
+                $count = 1;
+                for ($a = 0; $a < $page; $a++) {
+                    $dim  = $xlsx->dimension($a);
+                    $cols = $dim[0];
+                    foreach ($xlsx->rows($a) as $fields) {
+                        foreach ($fields as $key => $value) {
+                            $insert->bindValue($param[$key], $value);
+                            // echo ($key . '=>' . $value);
+                        }
+
+                        if ($insert->execute()) {
+                            $check = true;
+                        } else {
+                            $check = false;
+                            exit;
+                        }
+
+                    }
+
+                }
+
+            }
+
+        } else {
+            $check = SimpleXLSX::parseError();
+        }
+
+        return $check;
+    }
+
+    
+
+    public function exportExcel($data,$name) {
+        $timestamp = time();
+        $filename = $name. $timestamp . '.xls';
+        
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        
+        $isPrintHeader = false;
+        foreach ($data as $row) {
+            if (! $isPrintHeader) {
+                echo implode("\t", array_keys($row)) . "\n";
+                $isPrintHeader = true;
+            }
+            echo implode("\t", array_values($row)) . "\n";
+        }
+        exit();
     }
 }
 

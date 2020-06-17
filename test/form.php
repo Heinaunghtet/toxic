@@ -4,7 +4,8 @@ require ('../config/dbconfig.php');
 require ('../libs/form.php') ;
 require ('../libs/database.php');
 require ('../libs/model.php');
-$test=new Model();
+require ('../libs/file.php');
+
 
 
 if(isset($_REQUEST['run'])){
@@ -17,7 +18,7 @@ if(isset($_REQUEST['run'])){
 	// print_r($submit);
 	$delete=['1.txt','2.txt'];
 	$dir='img/';
-	$aaa=$test->deletfiles($delete,$dir);
+	$aaa=File::alldelete($dir);
 	print_r($aaa);
 	//$form->val('maxlength',5);
 	//$form->val( 'xss_clean_obj');

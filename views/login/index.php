@@ -18,7 +18,9 @@
 	    
 		<input type="submit" value="SUBMIT">
 	</form>
-	<?php print_r($this->msg); ?>
+	<?php if(isset($this->msg)){
+		echo $this->msg;
+	}; ?>
 	
 </div>
 

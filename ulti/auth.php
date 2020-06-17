@@ -15,7 +15,7 @@ class Auth
         {
             if ($check == false) {
                 Session::Destory();
-                header('location:http://localhost/UMS/login');
+                header('location:http://localhost/toxic/login');
                 exit;
             }
         }

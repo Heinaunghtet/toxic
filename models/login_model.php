@@ -42,13 +42,23 @@ class Login_Model extends Model
         }
 
     }
-    public function Checklog($value = '')
+    public function Checklog($usertime=60,$userlimit=5)
     {
         # code...
+        $time=30;
+        $limit=3;
+        if($usertime!=null){
+            $time=$usertime;
+
+        }
+        if($userlimit!=null){
+            $limit=$userlimit;
+        }
+
 
         $msg        = false;
-        $ctime      = time() - 30;
-        $ip_address = $this->getIpAddr();
+        $ctime      = time() - $time;
+        $ip_address = Auth::getIpAddr();
 // Getting total count of hits on the basis of IP
 
         $query = $this->db->prepare('SELECT count(*) as attempt FROM logs  WHERE tryTime >:ctime AND ipAddress=:ip_address');
@@ -59,8 +69,8 @@ class Login_Model extends Model
         $data        = $query->fetch(PDO::FETCH_ASSOC);
         $total_count = $data['attempt'];
 //Checking if the attempt 3, or youcan set the no of attempt her. For now we taking only 3 fail attempted
-        if ($total_count == 3) {
-            $msg = "To many failed login attempts. Please login after 30 sec";
+        if ($total_count == $limit) {
+            $msg = "To many failed login attempts. Please login after $time sec";
         } else {
 //Getting Post Values
             $password = Hash::Create('md5', $_POST['password'], HSKEY);
@@ -84,16 +94,16 @@ class Login_Model extends Model
 
             } else {
                 $total_count++;
-                $rem_attm = 3 - $total_count;
+                $rem_attm = $limit - $total_count;
                 if ($rem_attm == 0) {
-                    $msg = "To many failed login attempts. Please login after 30 sec";
+                    $msg = "To many failed login attempts. Please login after $time sec";
                 } else {
-                    $msg = "Please enter valid login details.<br/>$rem_attm attempts remaining";
+                    $msg = "Please enter valid login details.<br/>$rem_attm attempts remaining $total_count";
                 }
                 $try_time = time();
                 $query    = $this->db->prepare('INSERT INTO logs (tryTime,ipAddress)VALUES (:ctime,:ip_address)');
                 $query->execute(array(
-                    ':ctime'      => $ctime,
+                    ':ctime'      => time(),
                     ':ip_address' => $ip_address,
                 ));
                 //Session::Destory();
@@ -103,16 +113,5 @@ class Login_Model extends Model
 
      return $msg;
     }
-// Getting IP Address
-    public function getIpAddr()
-    {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ipAddr = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ipAddr = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ipAddr = $_SERVER['REMOTE_ADDR'];
-        }
-        return $ipAddr;
-    }
+
 }

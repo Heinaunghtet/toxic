@@ -1,5 +1,5 @@
 <?php
-//require('../ulti/validate.php');
+require('../ulti/validate.php');
 
 /**
  *

@@ -3,7 +3,7 @@
 /**
  * 
  */
-class Files
+class File
 {
 	
 
@@ -56,7 +56,9 @@ class Files
                 if (move_uploaded_file($temp_path, $target_file)) {
                     $total_files[] = $new_name;
                 } else {
-                    return false;
+                   $total_files= false;
+                   return $total_files;
+                   exit;
                 }
 
             } //upload condition end
@@ -91,6 +93,7 @@ class Files
 
             } else {
                $result = false;
+               return $result;
                exit;
             }
         }
@@ -109,9 +112,11 @@ class Files
                 unlink($file);
             }else{
                 return false;
+                exit;
             }
             // delete file
         }
+        return true;
     }
 
 }
