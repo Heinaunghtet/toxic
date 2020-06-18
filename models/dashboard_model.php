@@ -46,6 +46,20 @@ class Dashboard_Model extends Model
         $id=$_POST['id'];
         $query=$this->db->prepare('DELETE FROM news WHERE post_id=:id');
         $query->execute(array(':id'=>$id));
+         
+        
+    }
+
+    public function xhrUpdate()
+    {
+        
+        $id=$_POST['id'];
+        $data=$_POST['updatedata'];
+
+        $query=$this->db->prepare('UPDATE news SET text=:text WHERE post_id=:id');
+        if($query->execute(array(':id'=>$id,':text'=>$data))){
+            echo 1;
+        }
         
     }
 }

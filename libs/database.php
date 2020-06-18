@@ -176,7 +176,7 @@ class Database extends PDO
     }
 
     /**
-     * Read function
+     * Delete function
      * @param  [array]   $id -> predicate
      * @param  [string]   $table -> table name
      * @return [boolean]   true/false -> success/fail
@@ -231,11 +231,32 @@ class Database extends PDO
 
     }
 
+    public function selectdelete($query, $where = [])
+    {
+
+        $check     = false;
+        $selectdel = $this->prepare($query);
+        //echo $query;
+        //print_r($where);
+        foreach ($where as $key => $value) {
+            $selectdel->bindValue(":$key", $value);
+        }
+
+        if ($selectdel->execute()) {
+            $check = true;
+        }
+        return $check;
+
+    }
+
+    // $data=['rank','country','pol','est','world'];
+    // excelInsert('excel',$data,'file',true);
+
     public function excelInsert($table, $data, $filename, $allsheet = false)
     {
         $check     = false;
-        $attribute = '`' . implode('`,`', array_keys($data)) . '`';
-        $param     = ' :' . implode(',:', array_keys($data));
+        $attribute = '`' . implode('`,`', array_values($data)) . '`';
+        $param     = ' :' . implode(',:', array_values($data));
 
         // echo $attribute;
         // echo $param;
@@ -247,11 +268,13 @@ class Database extends PDO
 
             if ($allsheet == false) {
 
-                $dim  = $xlsx->dimension();
-                $cols = $dim[0];
-                foreach ($xlsx->rows() as $fields) {
+                $dim        = $xlsx->dimension();
+                $cols       = $dim[0];
+                $insertData = $xlsx->rows();
+                unset($insertData[0]);
+                foreach ($insertData as $fields) {
                     foreach ($fields as $key => $value) {
-                        $insert->bindValue($param[$key], $value);
+                        $insert->bindValue(":$data[$key]", $value);
                         // echo ($key . '=>' . $value);
                     }
 
@@ -269,11 +292,13 @@ class Database extends PDO
                 $page  = count($xlsx->sheetNames());
                 $count = 1;
                 for ($a = 0; $a < $page; $a++) {
-                    $dim  = $xlsx->dimension($a);
-                    $cols = $dim[0];
-                    foreach ($xlsx->rows($a) as $fields) {
+                    $dim        = $xlsx->dimension($a);
+                    $cols       = $dim[0];
+                    $insertData = $xlsx->rows($a);
+                    unset($insertData[0]);
+                    foreach ($insertData as $fields) {
                         foreach ($fields as $key => $value) {
-                            $insert->bindValue($param[$key], $value);
+                            $insert->bindValue(":$data[$key]", $value);
                             // echo ($key . '=>' . $value);
                         }
 
@@ -297,25 +322,107 @@ class Database extends PDO
         return $check;
     }
 
-    
+    // $data=['rank','country','pol','est','world'];
+    // csvInsert('excel',$data,'file');
+    public function csvInsert($table, $data, $filename)
+    {
+        $check     = false;
+        $attribute = '`' . implode('`,`', array_values($data)) . '`';
+        $param     = ' :' . implode(',:', array_values($data));
 
-    public function exportExcel($data,$name) {
-        $timestamp = time();
-        $filename = $name. $timestamp . '.xls';
+        // echo $attribute;
+        // echo $param;
+
+        $query  = "INSERT INTO $table ($attribute) VALUES ($param)";
+        $insert = $this->prepare($query);
+
+        $fileName = $_FILES[$filename]["tmp_name"];
+
         
-        header("Content-Type: application/vnd.ms-excel");
-        header("Content-Disposition: attachment; filename=\"$filename\"");
-        
-        $isPrintHeader = false;
-        foreach ($data as $row) {
-            if (! $isPrintHeader) {
-                echo implode("\t", array_keys($row)) . "\n";
-                $isPrintHeader = true;
+        if (($handle = fopen($fileName, "r")) !== false) {
+
+            while (($column = fgetcsv($handle, 1000, ",")) !== false) {
+                // $num  = count($column);
+                // $keys = count($data);
+
+                foreach ($column as $key => $value) {
+                    $insert->bindValue(":$data[$key]", $value);
+                    // echo ($data[$key] . '=>' . $value);
+                }
+
+                if ($insert->execute()) {
+                    $check = true;
+                } else {
+                    $check = false;
+                    exit;
+                }
+               
             }
-            echo implode("\t", array_values($row)) . "\n";
+
+            fclose($handle);
         }
-        exit();
+
+         return $check;
     }
+
+    // $data['id']= array("1", "2", "3", "4");
+    // $table =table name
+    public function selectedData($table, $reqdata)
+    {
+        $check      = false;
+        $prediciate = '';
+        $tempattr   = [];
+        $result     = [];
+        foreach ($reqdata as $key => $value) {
+            $tempattr[] = '`' . $key . '`' . '=:' . $key;
+            $predicate  = implode("", $tempattr);
+            foreach ($value as $keyvalue) {
+                $query    = "SELECT * FROM {$table} WHERE {$predicate}";
+                $retrieve = $this->prepare($query);
+                $retrieve->bindValue(":$key", $keyvalue);
+                if ($retrieve->execute()) {
+                    $result[] = $retrieve->fetchAll();
+                } else {
+                    return $check;
+                    exit();
+                }
+
+            }
+        }
+
+        return $result;
+    }
+
+    // $data['id']= array("1", "2", "3", "4");
+    // $table =table name
+    public function deleteData($table, $reqdata, $limit = 1)
+    {
+        $check     = false;
+        $predicate = '';
+        $tempattr  = [];
+
+        foreach ($reqdata as $key => $value) {
+            $tempattr[] = '`' . $key . '`' . '=:' . $key;
+            $predicate  = implode("", $tempattr);
+            foreach ($value as $keyvalue) {
+                $query  = "DELETE FROM {$table} WHERE {$predicate} LIMIT $limit";
+                $delete = $this->prepare($query);
+                $delete->bindValue(":$key", $keyvalue);
+                if ($delete->execute()) {
+                    $check = true;
+                } else {
+
+                    $check = false;
+                    return $check;
+                    exit();
+                }
+
+            }
+        }
+
+        return $check;
+    }
+
 }
 
 /**

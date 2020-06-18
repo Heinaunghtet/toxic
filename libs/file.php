@@ -1,13 +1,12 @@
-<?php 
+<?php
 
 /**
- * 
+ *
  */
 class File
 {
-	
 
-	public static function uploadFile($filename, $dir, $uniqname = false)
+    public static function uploadFile($filename, $dir, $uniqname = false)
     {
         //$dir    = "uploads/";
         $target_file = '';
@@ -56,9 +55,9 @@ class File
                 if (move_uploaded_file($temp_path, $target_file)) {
                     $total_files[] = $new_name;
                 } else {
-                   $total_files= false;
-                   return $total_files;
-                   exit;
+                    $total_files = false;
+                    return $total_files;
+                    exit;
                 }
 
             } //upload condition end
@@ -83,18 +82,18 @@ class File
 // $files = ['./first.jpg','./second.jpg','./third.jpg'];
     public static function deletfiles($files = '', $directory)
     {
-        $result=true;
+        $result = true;
         foreach ($files as $filename) {
             $path = $directory . $filename;
             if (file_exists($path)) {
                 if (!unlink($path)) {
-                   $result = false;
+                    $result = false;
                 }
 
             } else {
-               $result = false;
-               return $result;
-               exit;
+                $result = false;
+                return $result;
+                exit;
             }
         }
         return $result;
@@ -104,13 +103,13 @@ class File
     public static function alldelete($directory)
     {
 
-        $files = glob($directory.'/*'); // get all file names
+        $files = glob($directory . '/*'); // get all file names
         //$files = glob($directory.'/{,.}*, GLOB_BRACE'); // get all file names including hidden files
         foreach ($files as $file) {
             // iterate files
             if (is_file($file)) {
                 unlink($file);
-            }else{
+            } else {
                 return false;
                 exit;
             }
@@ -119,5 +118,16 @@ class File
         return true;
     }
 
+    public function changeCVS($filename, $csv)
+    {
+        $xlsx = new SimpleXLSX($filename);
+        $fp   = fopen($csv, 'w');
+        foreach ($xlsx->rows() as $fields) {
+            fputcsv($fp, $fields);
+        }
+        fclose($fp);
+    }
+
+    
+ 
 }
-?>
